@@ -17,25 +17,45 @@
 # limitations under the License.
 #
 
-remote_file "/usr/local/bin/sbt-launch.jar" do
-  source "http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/#{node[:sbt][:version]}/sbt-launch.jar"
-  action :create
+launcher_file_path = File.join(node[:sbt][:launcher_path], "sbt-launch.jar")
+script_file_path = File.join(node[:sbt][:bin_path], node[:sbt][:script_name])
 
-  not_if "java -jar /usr/local/bin/sbt-launch.jar \"sbt-version\" | tail -1 | awk '{print $2}' | grep '#{node[:sbt][:version]}'"
+directory node[:sbt][:launcher_path] do
+  recursive true
 end
 
-execute "sudo chown root:root /usr/local/bin/sbt-launch.jar"
-execute "sudo chmod 0755 /usr/local/bin/sbt-launch.jar"
+remote_file launcher_file_path do
+  source "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/#{node[:sbt][:version]}/sbt-launch.jar"
+  action :create
 
-template "/usr/local/bin/sbt" do
+  # not_if "java -jar #{launcher_file_path} \"sbt-version\" | tail -1 | awk '{print $2}' | grep '#{node[:sbt][:version]}'"
+end
+
+# execute "sudo chown root:root #{launcher_file_path}"
+# execute "sudo chmod 0755 #{launcher_file_path}"
+
+directory node[:sbt][:bin_path] do
+  recursive true
+end
+
+template script_file_path do
   source "sbt.erb"
   variables({
-    :java_options => node[:sbt][:java_options]
+    :java_options => node[:sbt][:java_options],
+    :launcher_file => launcher_file_path
   })
 
   action :create
 
-  owner "root"
-  group "root"
+  # owner "root"
+  # group "root"
   mode 0755
 end
+
+# if node['platform_family'] == "windows"
+#   windows_path win_friendly_path(node[:sbt][:bin_path]) do
+#     action :add
+#   end
+# else
+#
+# end

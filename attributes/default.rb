@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: chef-sudo
+# Cookbook Name:: chef-sbt
 # Attribute File:: default
 #
 # Copyright 2013 Matt Farmer
@@ -17,5 +17,8 @@
 # limitations under the License.
 #
 
-default['sbt']['version'] = '0.12.4'
-default['sbt']['java_options'] = '-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=512M'
+default['sbt']['version']       = '0.13.7'
+default['sbt']['java_options']  = '-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=512M'
+default['sbt']['script_name']   = "sbt"
+default['sbt']['launcher_path'] = "/usr/local/lib/share"
+default['sbt']['bin_path']      = "/usr/local/bin"
